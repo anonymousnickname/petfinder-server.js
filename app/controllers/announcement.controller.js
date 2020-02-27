@@ -19,7 +19,7 @@ exports.create = (req, res) => {
     description: req.body.description,
     status: req.body.status,
     price: req.body.price,
-    created_date: req.body.created_date,
+    created_date: Date.now(),
     location: req.body.location,
     user_id: req.body.user_id,
     sections_id: req.body.sections_id,
@@ -66,7 +66,13 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  announcementSequelize.findByPk(id)
+  announcementSequelize.findByPk(id, {
+    include : [{
+            model : db.images,
+            as : 'images'
+        }
+    ]
+})
     .then(data => {
       res.send(data);
     })
@@ -82,7 +88,12 @@ exports.update = (req, res) => {
   const id = req.params.id;
 
   announcementSequelize.update(req.body, {
-    where: { announcement_id: id }
+    where: { announcement_id: id },
+    include : [{
+      model : db.images,
+      as : 'images'
+  }]
+   
   })
     .then(num => {
       if (num == 1) {
@@ -146,7 +157,36 @@ exports.deleteAll = (req, res) => {
 
 // find all published announcement
 exports.findAllPublished = (req, res) => {
-  announcementSequelize.findAll({ where: { published: true } })
+  announcementSequelize.findAll({ where: {status: "VERIFY"}, include: [db.images, db.sections] })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving announcements."
+      });
+    });
+};
+
+exports.findAllCanceled = (req, res) => {
+  announcementSequelize.findAll({ where: {status: "CANCEL"}, include: [db.images, db.sections] })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving announcements."
+      });
+    });
+};
+
+exports.findAllUnPublished = (req, res) => {
+  const title = req.query.title;
+  var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+
+  announcementSequelize.findAll({ where: condition, where: {status: "NOT_VERIFY"}, include: [db.images, db.sections]})
     .then(data => {
       res.send(data);
     })

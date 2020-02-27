@@ -9,6 +9,10 @@ module.exports = (sequelize, Sequelize) => {
       name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      avatar: {
+        type: Sequelize.STRING,
+        allowNull: true
       }
     }, {
       freezeTableName: true,

@@ -12,6 +12,12 @@ module.exports = app => {
   // Retrieve all published announcement
   router.get("/published", announcement.findAllPublished);
 
+   // Retrieve all canceled announcement
+  router.get("/canceled", announcement.findAllCanceled);
+
+   // Retrieve all canceled announcement
+   router.get("/unpublished", announcement.findAllUnPublished);
+
   // Retrieve a single Tutorial with id
   router.get("/:id", announcement.findOne);
 

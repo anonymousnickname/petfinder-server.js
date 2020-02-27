@@ -25,6 +25,9 @@ module.exports = (sequelize, Sequelize) => {
     role: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    status: {
+      type: Sequelize.STRING
     }
   }, {
     freezeTableName: true,

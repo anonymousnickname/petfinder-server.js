@@ -36,6 +36,7 @@ module.exports = (sequelize, Sequelize) => {
         references: 'user', // <<< Note, its table's name, not object name
         referencesKey: 'user_id' // <<< Note, its a column name
   }
+
     }, {
       freezeTableName: true,
       timestamps: false

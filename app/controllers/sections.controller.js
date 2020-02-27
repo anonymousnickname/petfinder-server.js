@@ -15,7 +15,8 @@ exports.create = (req, res) => {
   // Create a sections
   const sections = {
     sections_id: req.body.sections_id,
-    name: req.body.name
+    name: req.body.name,
+    avatar: req.body.name
   };
 
   // Save sections in the database

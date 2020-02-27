@@ -1,4 +1,5 @@
 const db = require("../models");
+const emailService = require("../services/emailService");
 const userSequelize = db.user;
 const Op = db.Sequelize.Op;
 
@@ -25,6 +26,10 @@ exports.create = (req, res) => {
 
   // Save user in the database
   userSequelize.create(user)
+  .then(data => {
+    emailService.sendMail(data.email);
+    return data;
+  })
     .then(data => {
       res.send(data);
     })
@@ -57,7 +62,13 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  userSequelize.findByPk(id)
+  userSequelize.findByPk(id, {
+    include : [{
+            model : db.announcements,
+            as : 'announcements'
+        }
+    ]
+})
     .then(data => {
       res.send(data);
     })
@@ -140,6 +151,21 @@ exports.findAllPublished = (req, res) => {
   userSequelize.findAll({ where: { published: true } })
     .then(data => {
       res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving user."
+      });
+    });
+};
+
+// find user by email
+exports.existByEmail = (req, res) => {
+  var searchEmail = req.query.email
+  userSequelize.findOne({ where: { email: searchEmail } })
+    .then(data => {
+      res.send(data !== null);
     })
     .catch(err => {
       res.status(500).send({
