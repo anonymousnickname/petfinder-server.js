@@ -1,5 +1,6 @@
 const db = require("../models");
 const announcementSequelize = db.announcements;
+const imagesSequelize = db.images;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new announcement
@@ -88,29 +89,38 @@ exports.update = (req, res) => {
   const id = req.params.id;
 
   announcementSequelize.update(req.body, {
-    where: { announcement_id: id },
-    include : [{
-      model : db.images,
-      as : 'images'
-  }]
-   
+    where: {announcement_id: id}
   })
-    .then(num => {
-      if (num == 1) {
+      .then(num => {
+        if (num == 1) {
+          return req.body.images.map(image => imagesSequelize.update(image, {where: {images_id: image.images_id}})
+              .then(function (num) {
+                if (num != 1) {
+                  res.send({
+                    message: `Cannot update images with id=${id}. Maybe images was not found or req.body is empty!`
+                  });
+                }
+              }).catch(err => {
+                res.status(500).send({
+                  message: "Error updating image with id=" + image.images_id
+                });
+              }));
+        } else {
+          res.send({
+            message: `Cannot update announcement with id=${id}. Maybe announcement was not found or req.body is empty!`
+          });
+        }
+      })
+      .then(() => {
         res.send({
           message: "announcement was updated successfully."
         });
-      } else {
-        res.send({
-          message: `Cannot update announcement with id=${id}. Maybe announcement was not found or req.body is empty!`
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Error updating announcement with id=" + id
         });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating announcement with id=" + id
       });
-    });
 };
 
 // Delete a announcement with the specified id in the request

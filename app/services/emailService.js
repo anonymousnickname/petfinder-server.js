@@ -17,8 +17,9 @@ exports.sendMail = function(userEmail) {
 
     var mailOptions = {
         to: userEmail, // list of receivers
-        subject: "Job offer", // Subject line
-        text: 'Dear Mr. Viktor Frunza, \n\n dWe are pleased to extend the following offer of employment to you on behalf of TomTom. You have been selected as the best candidate for the trainee Java developer position. Congratulations! The others details you will recieve later. \n\n Regards, TomTom company.'
+        subject: "Petfinder", // Subject line
+        html: '<p>Thank you that you chose Petfinder.</p>' +
+            '<p>Click <a href="http://localhost:4200/login">here</a> and find a pet at Petfinder</p>'
     };
      transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
