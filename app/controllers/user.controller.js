@@ -162,6 +162,7 @@ exports.findAllPublished = (req, res) => {
 
 // find user by email
 exports.existByEmail = (req, res) => {
+
   var searchEmail = req.query.email
   userSequelize.findOne({ where: { email: searchEmail } })
     .then(data => {

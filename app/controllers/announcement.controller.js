@@ -93,19 +93,23 @@ exports.update = (req, res) => {
   })
       .then(num => {
         if (num == 1) {
-          return req.body.images.map(image => imagesSequelize.update(image, {where: {images_id: image.images_id}})
-              .then(function (num) {
-                if (num != 1) {
-                  res.send({
-                    message: `Cannot update images with id=${id}. Maybe images was not found or req.body is empty!`
-                  });
-                }
-              }).catch(err => {
-                res.status(500).send({
-                  message: "Error updating image with id=" + image.images_id
-                });
-              }));
-        } else {
+            if (req.body.images != undefined) {
+                return req.body.images.map(image => imagesSequelize.update(image, {where: {images_id: image.images_id}})
+                    .then(function (num) {
+                        if (num != 1) {
+                            res.send({
+                                message: `Cannot update images with id=${id}. Maybe images was not found or req.body is empty!`
+                            });
+                        }
+                    }).catch(err => {
+                        res.status(500).send({
+                            message: "Error updating image with id=" + image.images_id
+                        });
+                    }));
+            }
+
+        }
+        else {
           res.send({
             message: `Cannot update announcement with id=${id}. Maybe announcement was not found or req.body is empty!`
           });
@@ -196,7 +200,7 @@ exports.findAllUnPublished = (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
 
-  announcementSequelize.findAll({ where: condition, where: {status: "NOT_VERIFY"}, include: [db.images, db.sections]})
+  announcementSequelize.findAll({ where: condition, where: {status: "NOT_VERIFY"}, include: [db.images, db.sections, db.user]})
     .then(data => {
       res.send(data);
     })

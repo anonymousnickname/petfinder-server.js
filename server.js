@@ -43,11 +43,11 @@ passport.use(new LocalStrategy({
       where: { email: username }
     }).then(function (user) {
       if (!user) {
-        return done(null, false);
+        return done('user not found', false);
       }
 
       if (user.password != password) {
-        return done(null, false);
+        return done('password is not correct', false);
       }
       return done(null, user);
     });
@@ -92,7 +92,8 @@ passport.deserializeUser(function (id, done) {
 });
 
 const isLoggedIn = (req, res, next) => {
-    if (req.path === "/api/announcement/published" || req.isAuthenticated()) {
+
+    if (  req.path === "/api/user" || req.path === "/api/user/exist-email" || req.path === "/api/announcement" || req.path === "/api/announcement/published" || req.isAuthenticated()) {
         return next()
     }
     return res.status(401).json({"statusCode": 401, "message": "not authenticated"})
