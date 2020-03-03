@@ -5,8 +5,7 @@ const app = express();
 const passport = require('passport');
 const db = require("./app/models");
 const session = require("express-session");
-notUser = false;
-self = this;
+
 var corsOptions = {
     origin: "http://localhost:4200",
     header: "*",
@@ -44,8 +43,7 @@ passport.use(new LocalStrategy({
       where: { email: username }
     }).then(function (user) {
       if (!user) {
-          self.notUser = true;
-          return done('user not found', false);
+        return done('user not found', false);
       }
 
       if (user.password != password) {

@@ -86,8 +86,8 @@ exports.findOne = (req, res) => {
 
 // Update a announcement by the id in the request
 exports.update = (req, res) => {
-  const id = req.params.id;
 
+  const id = req.params.id;
   announcementSequelize.update(req.body, {
     where: {announcement_id: id}
   })
