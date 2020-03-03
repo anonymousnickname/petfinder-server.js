@@ -5,7 +5,8 @@ const app = express();
 const passport = require('passport');
 const db = require("./app/models");
 const session = require("express-session");
-
+notUser = false;
+self = this;
 var corsOptions = {
     origin: "http://localhost:4200",
     header: "*",
@@ -43,7 +44,8 @@ passport.use(new LocalStrategy({
       where: { email: username }
     }).then(function (user) {
       if (!user) {
-        return done('user not found', false);
+          self.notUser = true;
+          return done('user not found', false);
       }
 
       if (user.password != password) {
@@ -57,7 +59,7 @@ passport.use(new LocalStrategy({
 const auth = () => {
   return (req, res, next) => {
     passport.authenticate('local', (error, user, info) => {
-      if (error) res.status(400).json({ "statusCode": 400, "message": error });
+      if (error) res.status(400).json({ "statusCode": 400, "message": error })
       req.login(user, function (error) {
         if (error) return next(error);
         next();
@@ -92,8 +94,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 const isLoggedIn = (req, res, next) => {
-
-    if (  req.path === "/api/user" || req.path === "/api/user/exist-email" || req.path === "/api/announcement" || req.path === "/api/announcement/published" || req.isAuthenticated()) {
+    if ( req.path === "/api/user" || req.path === "/api/user/exist-email" || req.path === "/api/announcement/published" || req.isAuthenticated()) {
         return next()
     }
     return res.status(401).json({"statusCode": 401, "message": "not authenticated"})
